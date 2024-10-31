@@ -6,8 +6,9 @@
 //
 
 import SwiftUI
-import AVKit
 
+// Test content view
+//
 struct ContentView: View {
     
     @StateObject var runRhythmHome = RunRhythmHomeViewModel()
