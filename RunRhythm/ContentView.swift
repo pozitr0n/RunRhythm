@@ -160,7 +160,7 @@ struct RunnerSpeedometerView: View {
             
             // Outer circle (speedometer)
             Circle()
-                .stroke(lineWidth: 20)
+                .stroke(lineWidth: 30)
                 .opacity(0.3)
                 .foregroundColor(Color.gray)
             
@@ -189,7 +189,7 @@ struct RunnerSpeedometerView: View {
             
             // Emulate tempo change
             Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                self.currentSpeed = Double.random(in: 4...15)
+                self.currentSpeed = Double.random(in: 0...25)
             }
             
         }
