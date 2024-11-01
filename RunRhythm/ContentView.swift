@@ -12,7 +12,8 @@ import SwiftUI
 struct ContentView: View {
     
     @StateObject var runRhythmHome = RunRhythmHomeViewModel()
-    @State var width: CGFloat = UIScreen.main.bounds.height < 750 ? 250 : 300
+    @State var width: CGFloat = UIScreen.main.bounds.height < 750 ? 200 : 270
+    @State var widthAnother: CGFloat = UIScreen.main.bounds.height < 750 ? 265 : 285
     @State private var isPlaying = false
     
     let flexibleConstant: CGFloat = 45
@@ -20,57 +21,17 @@ struct ContentView: View {
     let blackWhite = Color.init("blackWhite", bundle: nil)
     let grayWhite = Color.init("grayWhite", bundle: nil)
 
-    @State var progress: CGFloat = 0
-    let colors = [Color.init("blackGray", bundle: nil),
-                  Color.init("grayLightGray", bundle: nil),
-                  Color.red]
-    
     var body: some View {
         
         VStack {
-            
-            Spacer(minLength: 0)
         
             VStack {
                 
-                Meter(progress: self.$progress)
-                
-                HStack(spacing: 15) {
-                    
-                    Button(action: {
-                        if self.progress != 100 {
-                            withAnimation(Animation.default.speed(0.55)) {
-                                self.progress += 10
-                            }
-                        }
-                    }) {
-                        Text("Update")
-                            .padding(.vertical)
-                            .foregroundColor(blackWhite)
-                            .frame(width: (UIScreen.main.bounds.width)/4, height: 35)
-                    }
-                    
-                    .background(Capsule().stroke(self.colors[0], lineWidth: 2))
-                    .padding()
-                    .padding(.top, 20)
-                    
-                    Button(action: {
-                        withAnimation(Animation.default.speed(0.55)) {
-                            self.progress = 0
-                        }
-                    }) {
-                        Text("Reset")
-                            .padding(.vertical)
-                            .foregroundColor(blackWhite)
-                            .frame(width: (UIScreen.main.bounds.width)/4, height: 35)
-                    }
-                    .background(Capsule().stroke(self.colors[0], lineWidth: 2))
-                    .padding()
-                    .padding(.top, 20)
-                    
-                }
+                RunnerSpeedometerView()
+                    .frame(width: widthAnother, height: widthAnother)
                 
             }
+            .padding(.top, -30)
             
             ZStack {
                 
@@ -113,6 +74,7 @@ struct ContentView: View {
                     .offset(x: UIScreen.main.bounds.height < 750 ? 65 : 85 , y: (width + 60) / 2)
                 
             }
+            .padding(.top, -20)
             
             Text("Breath In")
                 .font(.title2)
@@ -124,9 +86,9 @@ struct ContentView: View {
             
             Text("Armin van Buuren")
                 .foregroundColor(.gray)
-                .padding(.top, 5)
+                .padding(.top, -10)
             
-            HStack(spacing: 55) {
+            HStack(spacing: 45) {
                 
                 Button(action: {}) {
                     
@@ -156,9 +118,6 @@ struct ContentView: View {
                 }
                 
             }
-            .padding(.top, 25)
-            
-            Spacer(minLength: 0)
             
         }
 
@@ -166,73 +125,6 @@ struct ContentView: View {
     
     func togglePlayPause() {
         isPlaying.toggle()
-    }
-    
-}
-
-struct Meter: View {
-    
-    @Binding var progress: CGFloat
-    let colors = [Color.init("blackGray", bundle: nil),
-                  Color.init("grayLightGray", bundle: nil),
-                  Color.red]
-    
-    let blackWhite = Color.init("blackWhite", bundle: nil)
-    let grayWhite = Color.init("grayWhite", bundle: nil)
-    
-    var body: some View {
-        
-        ZStack {
-            
-            // Circular progress bar
-            ZStack {
-                
-                Circle()
-                    .trim(from: 0, to: 0.5)
-                    .stroke(blackWhite.opacity(0.2), lineWidth: 35)
-                    .frame(width: 200, height: 200)
-                
-                Circle()
-                    .trim(from: 0, to: self.setProgress())
-                    .stroke(AngularGradient(gradient: .init(colors: self.colors), center: .center, angle: .init(degrees: 180)), lineWidth: 35)
-                    .frame(width: 200, height: 200)
-                
-            }
-            .rotationEffect(.init(degrees: 180))
-            
-            // Arrow indicator
-            ZStack (alignment: .bottom) {
-                
-                // Arrow stem
-                self.colors[0]
-                    .frame(width: 2, height: 75)
-                
-                // Arrow head
-                Circle()
-                    .fill(self.colors[1])
-                    .frame(width: 15, height: 15)
-                
-            }
-            .offset(y: -35)
-            .rotationEffect(.init(degrees: -90))
-            .rotationEffect(.init(degrees: self.setArrow()))
-            
-        }
-        .padding()
-        .padding(.bottom, -140)
-        
-    }
-    
-    // Calculate progress for the circular bar
-    func setProgress() -> CGFloat {
-        let temp = self.progress / 2
-        return (temp * 0.01)
-    }
-    
-    // Calculate rotation for the arrow indicator
-    func setArrow() -> Double {
-        let temp = self.progress/100
-        return (temp * 180)
     }
     
 }
@@ -252,6 +144,54 @@ class RunRhythmHomeViewModel: ObservableObject {
             withAnimation(Animation.linear(duration: 0.1)) {
                 self.currentAngle = Double(currentAngle)
             }
+        }
+        
+    }
+    
+}
+
+struct RunnerSpeedometerView: View {
+    
+    @State private var currentSpeed: Double = 6.0 // runner's current pace
+    
+    var body: some View {
+       
+        ZStack {
+            
+            // Outer circle (speedometer)
+            Circle()
+                .stroke(lineWidth: 20)
+                .opacity(0.3)
+                .foregroundColor(Color.gray)
+            
+            // Ring Progress
+            Circle()
+                .trim(from: 0.0, to: min(CGFloat(currentSpeed / 12), 1.0))
+                .stroke(AngularGradient(gradient: Gradient(colors: [.green, .yellow, .red]),
+                                        center: .center), lineWidth: 20)
+                .rotationEffect(Angle(degrees: -90))
+                .animation(.easeInOut, value: currentSpeed)
+            
+            // Current tempo
+            VStack {
+                Text("\(String(format: "%.1f", currentSpeed)) km/h")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                
+                Text("Current Speed")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            
+        }
+        .padding(40)
+        .onAppear {
+            
+            // Emulate tempo change
+            Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                self.currentSpeed = Double.random(in: 4...15)
+            }
+            
         }
         
     }
