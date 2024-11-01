@@ -153,6 +153,7 @@ class RunRhythmHomeViewModel: ObservableObject {
 struct RunnerSpeedometerView: View {
     
     @State private var currentSpeed: Double = 6.0 // runner's current pace
+    @State var currentSpeedFont: Font = UIScreen.main.bounds.height < 750 ? .title : .largeTitle
     
     var body: some View {
        
@@ -175,7 +176,7 @@ struct RunnerSpeedometerView: View {
             // Current tempo
             VStack {
                 Text("\(String(format: "%.1f", currentSpeed)) km/h")
-                    .font(.largeTitle)
+                    .font(currentSpeedFont)
                     .fontWeight(.bold)
                 
                 Text("Current Speed")
