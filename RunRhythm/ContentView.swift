@@ -171,7 +171,8 @@ struct RunnerSpeedometerView: View {
                 .stroke(AngularGradient(gradient: Gradient(stops: [
                     .init(color: Color.green.opacity(0.0), location: 0.0),
                     .init(color: Color.green, location: 0.2),
-                    .init(color: Color.green, location: 0.4),
+                    .init(color: Color.green, location: 0.3),
+                    .init(color: Color.yellow, location: 0.4),
                     .init(color: Color.yellow, location: 0.5),
                     .init(color: Color.red, location: 0.6),
                     .init(color: Color.red, location: 0.7),
