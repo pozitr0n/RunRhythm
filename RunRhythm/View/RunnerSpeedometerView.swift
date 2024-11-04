@@ -11,8 +11,9 @@ import SwiftUI
 //
 struct RunnerSpeedometerView: View {
     
-    // runner's current pace
-    @State private var currentSpeed: Double = 0.0
+    // Using speed from LocationManager
+    @StateObject private var locationManager = LocationManager()
+    
     @State var currentSpeedFont: Font = UIScreen.main.bounds.height < 750 ? .title : .largeTitle
     
     var body: some View {
@@ -27,7 +28,7 @@ struct RunnerSpeedometerView: View {
             
             // Ring Progress
             Circle()
-                .trim(from: 0.05, to: min(CGFloat(currentSpeed / 20), 0.95))
+                .trim(from: 0.05, to: min(CGFloat(locationManager.speed * 3.6 / 20), 0.95))
                 .stroke(AngularGradient(gradient: Gradient(stops: [
                     .init(color: Color.green.opacity(0.0), location: 0.0),
                     .init(color: Color.green, location: 0.2),
@@ -39,12 +40,12 @@ struct RunnerSpeedometerView: View {
                     .init(color: Color.red.opacity(0.0), location: 1.0)
                 ]), center: .center), lineWidth: 20)
                 .rotationEffect(Angle(degrees: -90))
-                .animation(.easeInOut, value: currentSpeed)
+                .animation(.easeInOut, value: locationManager.speed)
             
-            // Current tempo
+            // Current speed
             VStack {
                 
-                Text("\(String(format: "%.1f", currentSpeed)) km/h")
+                Text("\(String(format: "%.1f", locationManager.speed * 3.6)) km/h")
                     .font(currentSpeedFont)
                     .fontWeight(.bold)
                 
@@ -57,13 +58,7 @@ struct RunnerSpeedometerView: View {
         }
         .padding(40)
         .onAppear {
-            
-            // Emulate tempo change
-            // Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            //    self.currentSpeed = Double.random(in: 0...20)
-            // }
-            self.currentSpeed = 10
-            
+            print("Speed view appeared with current speed: \(locationManager.speed * 3.6) km/h")
         }
         
     }
