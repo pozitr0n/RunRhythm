@@ -11,11 +11,19 @@ import SwiftUI
 //
 struct ContentView: View {
     
+    //0: km/h, 1: m/s, 2: mph
+    @State private var optionValue: Int = 0
+    
+    // Getting ObservedObject of LocationViewModel
+    @ObservedObject private var locationViewModel = LocationViewModel()
+    
+    private var speedCalculation = SpeedCalculations()
+    
+    // Options (scale): 0, 1, 2, 3
+    @State private var speedometerScale: Int = 1
+        
     @StateObject var runRhythmHome = RunRhythmHomeViewModel()
-    
-    @State var playerWidth: CGFloat = UIScreen.main.bounds.height < 750 ? 200 : 270
-    @State var runnerSpeedometerWidth: CGFloat = UIScreen.main.bounds.height < 750 ? 265 : 285
-    
+    @State var playerWidth: CGFloat = UIScreen.main.bounds.height < 750 ? 190 : 260
     @State private var isPlaying = false
     
     let flexibleConstant: CGFloat = 45
@@ -35,11 +43,59 @@ struct ContentView: View {
         
             VStack {
                 
-                RunnerSpeedometerView()
-                    .frame(width: runnerSpeedometerWidth, height: runnerSpeedometerWidth)
+                ZStack {
+                    
+                    Gauge(value: min(max(speedCalculation.getConvertSpeed(optionValue, locationViewModel.speed), 0), Double(speedCalculation.getMaximumSpeed(optionValue, speedometerScale))), in: 0...Double(speedCalculation.getMaximumSpeed(optionValue, speedometerScale))) {
+                                            
+                    } currentValueLabel: {
+                        Text("")
+                    } minimumValueLabel: {
+                        Text("0")
+                    } maximumValueLabel: {
+                        Text("\(speedCalculation.getMaximumSpeed(optionValue, speedometerScale))")
+                    }
+                    .gaugeStyle(RunnerSpeedometerView())
+                    .animation(.bouncy(duration: 0.3), value: optionValue)
+                    .animation(.bouncy(duration: 0.3), value: speedometerScale)
+                    
+                    VStack(spacing: 10) {
+                        
+                        HStack(spacing: 15) {
+                            
+                            HStack(spacing: 3) {
+                                
+                                Text("\(String(format: "%.1f", locationViewModel.speed < 0 ? 0 : speedCalculation.getConvertSpeed(optionValue, locationViewModel.speed)))")
+                                    .font(.system(size: 50))
+                                    .padding(.leading)
+                                
+                                Text(speedCalculation.getSpeedOptionUnit(optionValue))
+                                    .font(.system(size: 25))
+                                    .offset(y: 7)
+                                
+                            }
+                        }
+                        .fontWeight(.semibold)
+                    }
+                    .padding()
+                    .animation(.bouncy(duration: 0.3), value: optionValue)
+                    
+                }
+                .onTapGesture {
+                    optionValue = (optionValue + 1) % 3
+                }
+                
+                Picker("", selection: $speedometerScale) {
+                    Text("\(speedCalculation.getMaximumSpeed(optionValue, 0))").tag(0)
+                    Text("\(speedCalculation.getMaximumSpeed(optionValue, 1))").tag(1)
+                    Text("\(speedCalculation.getMaximumSpeed(optionValue, 2))").tag(2)
+                    Text("\(speedCalculation.getMaximumSpeed(optionValue, 3))").tag(3)
+                }
+                .pickerStyle(.segmented)
+                .containerRelativeFrame(.horizontal, count: 5, span: 3, spacing: 0)
+                .containerRelativeFrame(.vertical, count: 1, span: 0, spacing: 0)
                 
             }
-            .padding(.top, -30)
+            .containerRelativeFrame(.vertical, count: 9, span: 4, spacing: 0)
             
             ZStack {
                 
@@ -63,7 +119,7 @@ struct ContentView: View {
                     
                     Circle()
                         .fill(blackWhite)
-                        .frame(width: 30, height: 30)
+                        .frame(width: 20, height: 30)
                         .offset(x: (playerWidth + flexibleConstant) / 2)
                         .rotationEffect(.init(degrees: runRhythmHome.currentAngle))
                         .gesture(DragGesture().onChanged(runRhythmHome.onChanged(value:)))
@@ -82,7 +138,7 @@ struct ContentView: View {
                     .offset(x: UIScreen.main.bounds.height < 750 ? 65 : 85 , y: (playerWidth + 60) / 2)
                 
             }
-            .padding(.top, -20)
+            .padding(.top, -30)
             
             Text(currentSongName)
                 .font(.title2)
@@ -128,7 +184,12 @@ struct ContentView: View {
             }
             
         }
-
+        .padding(.top, -40)
+        .monospacedDigit()
+        .font(.system(size: 20))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemGray6).opacity(0.7))
+        
     }
     
     func togglePlayPause() {

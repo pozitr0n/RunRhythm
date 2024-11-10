@@ -7,12 +7,45 @@
 		<key>RunRhythm.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>1</integer>
 		</dict>
 		<key>RunRhythmWatch Watch App.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>4D10BDC92CCE823B00F71071</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4D10BDD92CCE823D00F71071</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4D10BDE32CCE823D00F71071</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4D10BDFA2CCE837400F71071</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4D10BE092CCE837600F71071</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4D10BE132CCE837600F71071</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

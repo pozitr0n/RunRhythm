@@ -5,6 +5,8 @@
 //  Created by Raman Kozar on 04/11/2024.
 //
 
+// Struct for saving song duration for displaying
+//
 struct SongDuration {
     
     let minutes: Int
